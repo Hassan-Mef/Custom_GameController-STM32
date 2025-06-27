@@ -163,7 +163,7 @@ int main(void)
       if ((home == GPIO_PIN_RESET) || (b2 == GPIO_PIN_RESET) || (b3 == GPIO_PIN_RESET) || (b4 == GPIO_PIN_RESET) || (b5 == GPIO_PIN_RESET) || (b6 == GPIO_PIN_RESET) || (b7 == GPIO_PIN_RESET) || (b8 == GPIO_PIN_RESET) || (b9 == GPIO_PIN_RESET))
       {
           HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-          HAL_Delay(100);
+          HAL_Delay(50);
       }
 
       // Joystick1 controls on-board LED PC13
@@ -191,7 +191,7 @@ int main(void)
 
 
       Joystick_SendReport();
-          HAL_Delay(100);
+          HAL_Delay(50);
 
 
   }
