@@ -11,7 +11,7 @@
 ## 📸 Final Product
 
 
-![Final Product](final.jpg)
+![Final Product](Final.jpg)
 
 ---
 
