@@ -170,4 +170,46 @@ uint8_t adc_to_hid_u8(uint16_t raw) {
 | 5          | Ry (Joystick 2)   |
 | 6          | Z (Trigger 1)     |
 | 7          | Rz (Trigger 2)    |
+-
+# 🧠 Initialization Summary
 
+- Clock: HSE on PH0/PH1
+
+- ADC1: Circular DMA, 4 channels
+
+- GPIO: All buttons input (pull-up), LEDs as output
+
+- Timer 3: Triggers ADC sampling
+
+- USB: Configured as FS Device on PA11/PA12
+
+# 📚 Dependencies
+
+- STM32 HAL Drivers
+
+- STM32CubeMX-generated initialization
+
+- Custom HID Descriptor override
+
+# ❗ Known Issues / Notes
+
+Bluetooth via ESP32 was planned but not implemented
+
+Center calibration happens after 200ms delay on boot
+
+Some GPIOs (e.g., SWD pins) are repurposed — debugging over UART might conflict
+
+# 📸 Future Improvements
+
+Add Bluetooth HID support via ESP32 UART
+
+Implement debouncing or EXTI for buttons
+
+Add OLED status screen or RGB LEDs
+
+# 🧑‍💻 Author
+
+
+@Hassan-Mef – Custom Game Controller using STM32F411 Black Pill
+
+Feel free to fork and modify!
