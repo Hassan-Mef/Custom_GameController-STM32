@@ -9,9 +9,9 @@
 ---
 
 ## 📸 Final Product
-*(Insert image below of your final assembled controller)*
 
-![Final Product](./images/controller.jpg)
+
+![Final Product](final.jpg)
 
 ---
 
@@ -64,4 +64,110 @@ STM32_Gamepad_Project/
 └── README.md <-- (this file)
 ```
 
-[... Remaining sections omitted for brevity ...]
+
+# 🕹️ Button Mapping
+
+| Button         | GPIO Pin | HID Bit | Description       |
+|----------------|----------|---------|-------------------|
+| X              | PB4      | 0       | Action Button     |
+| Y              | PB5      | 1       | Action Button     |
+| A              | PB2      | 2       | Action Button     |
+| B              | PB3      | 3       | Action Button     |
+| D-Pad Up       | PB6      | 12      | Directional       |
+| D-Pad Down     | PB7      | 13      | Directional       |
+| D-Pad Left     | PB8      | 14      | Directional       |
+| D-Pad Right    | PB9      | 15      | Directional       |
+| Option Button  | PA0      | 9       | Start/Menu button |
+
+- All buttons are **active-low** and polled via GPIO.
+
+---
+
+## 🎮 Joystick Mapping
+
+### Left Joystick (Joystick 1)
+- VRx: PB1 → `adcValues[1]`
+- VRy: PB0 → `adcValues[0]`
+
+### Right Joystick (Joystick 2)
+- VRx: PA6 → `adcValues[2]`
+- VRy: PA7 → `adcValues[3]`
+
+### LED Indicators
+- PC13 toggles when any button is pressed.
+- PC10 and PA10 toggle depending on joystick movement.
+
+---
+
+## 📏 ADC Details
+- **Resolution**: 12-bit (0–4095)
+- **Reference Voltage**: 3.3V
+- **Mode**: Circular DMA
+- **Trigger**: TIM3 Timer
+
+### 🧮 Joystick Processing
+```c
+#define DEAD_ZONE 200
+
+uint16_t apply_deadzone(uint16_t raw) {
+    if (raw > 2048 - DEAD_ZONE && raw < 2048 + DEAD_ZONE)
+        return 2048;
+    return raw;
+}
+
+uint8_t adc_to_hid_u8(uint16_t raw) {
+    int32_t val = raw - 2048;
+    val = (val * 127) / 2048;
+    if (val > 127) val = 127;
+    if (val < -128) val = -128;
+    return (uint8_t)(val + 128); // Shift to 0–255 range
+}
+```
+
+---
+
+## 📤 HID Report Descriptor (Xbox360 Style)
+```text
+0x05, 0x01,        // Usage Page (Generic Desktop)
+0x09, 0x05,        // Usage (Gamepad)
+0xA1, 0x01,        // Collection (Application)
+  0x05, 0x09,      // Usage Page (Button)
+  0x19, 0x01,      // Usage Minimum (Button 1)
+  0x29, 0x10,      // Usage Maximum (Button 16)
+  0x15, 0x00,      // Logical Minimum (0)
+  0x25, 0x01,      // Logical Maximum (1)
+  0x75, 0x01,      // Report Size (1)
+  0x95, 0x10,      // Report Count (16)
+  0x81, 0x02,      // Input (Data, Variable, Absolute)
+
+  0x05, 0x01,      // Usage Page (Generic Desktop)
+  0x09, 0x30,      // Usage (X)
+  0x09, 0x31,      // Usage (Y)
+  0x09, 0x33,      // Usage (Rx)
+  0x09, 0x34,      // Usage (Ry)
+  0x15, 0x00,
+  0x26, 0xFF, 0x00, // Logical Maximum (255)
+  0x75, 0x08,      // Report Size (8)
+  0x95, 0x04,      // Report Count (4)
+  0x81, 0x02,      // Input (Data, Variable, Absolute)
+
+  0x09, 0x32,      // Usage (Z)
+  0x09, 0x35,      // Usage (Rz)
+  0x75, 0x08,
+  0x95, 0x02,
+  0x81, 0x02,
+0xC0               // End Collection
+```
+
+### 🧾 Report Structure (8 bytes)
+| Byte Index | Description      |
+|------------|------------------|
+| 0          | Buttons LSB       |
+| 1          | Buttons MSB       |
+| 2          | X (Joystick 1)    |
+| 3          | Y (Joystick 1)    |
+| 4          | Rx (Joystick 2)   |
+| 5          | Ry (Joystick 2)   |
+| 6          | Z (Trigger 1)     |
+| 7          | Rz (Trigger 2)    |
+
