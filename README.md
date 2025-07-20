@@ -10,6 +10,8 @@
 
 ## 📸 Final Product
 
+### ⚠️ Note: The current hardware setup is not on a proper PCB or veroboard, as this was developed under a tight university schedule with limited time. While the circuit might not look polished, it works reliably for demonstration and testing purposes. A proper PCB or veroboard design is planned and will be uploaded soon. Stay tuned!
+
 
 ![Final Product](Final.jpg)
 
